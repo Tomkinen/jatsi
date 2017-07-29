@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <title>Jatsi</title>
+
+    <!-- Axios and Vue from cloudflare CDN. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.16.2/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.4/vue.min.js"></script>
+
+    <!-- All custom frontend css styles in styles.css.
+    Using Furtive micro css framework. Had to customize it to make styles work ok with ios safari. Furtive uses MIT license.
+    Furtive: https://github.com/johnotander/furtive -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- All custom frontend javascript in frontend.js. -->
+    <script src="frontend.js"></script>
+</head>
+<body class="bg--light-gray">
+
+<!-- This vui div will be Vui.js playground. -->
+<div id="vui" class="grd">
+    <div class="grd-row">
+        <div class="grd-row-col-6 bg--light-gray m1"></div>
+    </div>
+    <div class="grd-row" id="jatsi_main">
+        <div class="grd-row-col-1-6--md" id="jatsi_left"></div>
+        <div class="grd-row-col-4-6--md bg--white" id="jatsi_center">
+
+            <!-- Buttons are visible or hidden depending on current game situation. -->
+            <button class="btn--blue m1" v-on:click="clickNewGame(0,numberOfPlayers)" v-if="(gameStarted==false || endGameSituation==true) && highScoresVisible==false && ((player1NameInput!='' && numberOfPlayers==0) || (player1NameInput!='' && player2NameInput!='' && numberOfPlayers==1) || (player1NameInput!='' && player2NameInput!='' && player3NameInput!='' && numberOfPlayers==2) || (player1NameInput!='' && player2NameInput!='' && player3NameInput!='' && player4NameInput!='' && numberOfPlayers==3))">{{ ui.newGame }}</button>
+            <button class="btn--green m1" v-on:click="clickThrowDice(gameId,activePlayer)" v-if="activeAiPlayer=='N' && gameStarted==true && highScoresVisible==false && activeThrowNumber!=3 && endGameSituation==false">{{ ui.throwDice }}</button>
+            <button class="btn--gray m1" v-on:click="clickHighScores()" v-if="activeAiPlayer=='N' && highScoresVisible==false">{{ ui.highScores }}</button>
+            <button class="btn--gray m1" v-on:click="clickHighScores()" v-if="highScoresVisible==true">{{ ui.back }}</button>
+            <div class="m1" v-if="activeAiPlayer=='Y'">{{ aiMessage }}</div>
+
+            <!-- Player must enter number of players and player name(s) to start new game. -->
+            <div class="m1" v-if="((gameStarted==false && highScoresVisible==false) || (endGameSituation==true && highScoresVisible==false))">
+                <label for="numberOfPlayers"> {{ ui.numberOfPlayers }}:</label>
+                <select name="numberOfPlayers" v-model="numberOfPlayers">
+                    <option value="0">1</option>
+                    <option value="1">2</option>
+                    <option value="2">3</option>
+                    <option value="3">4</option>
+                </select>
+            </div>
+            <div class="grd-row" v-if="(gameStarted==false && highScoresVisible==false) || (endGameSituation==true && highScoresVisible==false)">
+                <div class="m1 grd-row-col-4-6" v-if="numberOfPlayers>-1 && player1TypeInput=='N'">
+                    <label for="player1NameInput">{{ ui.player1Name }}:</label>
+                    <input type="text" id="player1NameInput" v-model="player1NameInput" maxlength="50">
+                </div>
+                <div class="m1 grd-row-col-4-6" v-if="numberOfPlayers>-1 && player1TypeInput=='Y'">
+                    <label for="player1NameInput">{{ ui.player1Name }}:</label><br>
+                    {{ player1NameInput }}
+                </div>
+                <div class="m1 grd-row-col-2-6" v-if="numberOfPlayers>-1">
+                    <label for="player1TypeInput">{{ ui.player1Type }}:</label>
+                    <select name="player1TypeInput" v-model="player1TypeInput" v-on:change="aiTrigger(1)">
+                        <option value="N">{{ ui.human }}</option>
+                        <option value="Y">{{ ui.ai }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grd-row" v-if="(gameStarted==false && highScoresVisible==false) || (endGameSituation==true && highScoresVisible==false)">
+                <div class="m1 grd-row-col-4-6" v-if="numberOfPlayers>0 && player2TypeInput=='N'">
+                    <label for="player2NameInput">{{ ui.player2Name }}:</label>
+                    <input type="text" id="player2NameInput" v-model="player2NameInput" maxlength="50">
+                </div>
+                <div class="m1 grd-row-col-4-6" v-if="numberOfPlayers>0 && player2TypeInput=='Y'">
+                    <label for="player2NameInput">{{ ui.player2Name }}:</label><br>
+                    {{ player2NameInput }}
+                </div>
+                 <div class="m1 grd-row-col-2-6" v-if="numberOfPlayers>0">
+                    <label for="player2TypeInput">{{ ui.player2Type }}:</label>
+                    <select name="player2TypeInput" v-model="player2TypeInput" v-on:change="aiTrigger(2)">
+                        <option value="N">{{ ui.human }}</option>
+                        <option value="Y">{{ ui.ai }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grd-row" v-if="(gameStarted==false && highScoresVisible==false) || (endGameSituation==true && highScoresVisible==false)">
+                <div class="m1 grd-row-col-4-6" v-if="numberOfPlayers>1 && player3TypeInput=='N'">
+                    <label for="player3NameInput">{{ ui.player3Name }}:</label>
+                    <input type="text" id="player3NameInput" v-model="player3NameInput" maxlength="50">
+                </div>
+                <div class="m1 grd-row-col-4-6" v-if="numberOfPlayers>1 && player3TypeInput=='Y'">
+                    <label for="player3NameInput">{{ ui.player3Name }}:</label><br>
+                    {{ player3NameInput }}
+                </div>
+                <div class="m1 grd-row-col-2-6" v-if="numberOfPlayers>1">
+                    <label for="player3TypeInput">{{ ui.player3Type }}:</label>
+                    <select name="player3TypeInput" v-model="player3TypeInput" v-on:change="aiTrigger(3)">
+                        <option value="N">{{ ui.human }}</option>
+                        <option value="Y">{{ ui.ai }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grd-row" v-if="(gameStarted==false && highScoresVisible==false) || (endGameSituation==true && highScoresVisible==false)">
+                <div class="m1 grd-row-col-4-6" v-if="numberOfPlayers>2 && player4TypeInput=='N'">
+                    <label for="player4NameInput">{{ ui.player4Name }}:</label>
+                    <input type="text" id="player4NameInput" v-model="player4NameInput" maxlength="50">
+                </div>
+                <div class="m1 grd-row-col-4-6" v-if="numberOfPlayers>2 && player4TypeInput=='Y'">
+                    <label for="player4NameInput">{{ ui.player4Name }}:</label><br>
+                    {{ player4NameInput }}
+                </div>
+                <div class="m1 grd-row-col-2-6" v-if="numberOfPlayers>2">
+                    <label for="player4TypeInput">{{ ui.player4Type }}:</label>
+                    <select name="player4TypeInput" v-model="player4TypeInput" v-on:change="aiTrigger(4)">
+                        <option value="N">{{ ui.human }}</option>
+                        <option value="Y">{{ ui.ai }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Div that contains the dice. Player can click these to set which dice will be kept and which will be thrown. -->
+            <table class="m1" v-if="gameStarted==true && highScoresVisible==false && endGameSituation==false" v-bind:style="disableClick">
+                <tr>
+                    <td><button v-if="dice1Selected==false" v-on:click="dice1Selected=true" class="btn" >{{ dice1 }}</button><button v-if="dice1Selected==true" v-on:click="dice1Selected=false" class="btn--blue" >{{ dice1 }}</button></td>
+                    <td><button v-if="dice2Selected==false" v-on:click="dice2Selected=true" class="btn" >{{ dice2 }}</button><button v-if="dice2Selected==true" v-on:click="dice2Selected=false" class="btn--blue" >{{ dice2 }}</button></td>
+                    <td><button v-if="dice3Selected==false" v-on:click="dice3Selected=true" class="btn" >{{ dice3 }}</button><button v-if="dice3Selected==true" v-on:click="dice3Selected=false" class="btn--blue" >{{ dice3 }}</button></td>
+                    <td><button v-if="dice4Selected==false" v-on:click="dice4Selected=true" class="btn" >{{ dice4 }}</button><button v-if="dice4Selected==true" v-on:click="dice4Selected=false" class="btn--blue" >{{ dice4 }}</button></td>
+                    <td><button v-if="dice5Selected==false" v-on:click="dice5Selected=true" class="btn" >{{ dice5 }}</button><button v-if="dice5Selected==true" v-on:click="dice5Selected=false" class="btn--blue" >{{ dice5 }}</button></td>
+                </tr>
+            </table>
+
+            <!-- Round and throw number information to player. -->
+            <div class="m1" v-if="gameStarted==true && highScoresVisible==false && endGameSituation==false">
+                <p>{{ ui.player }}: {{ activePlayerName }}
+                <p>{{ ui.round }}: {{ activeRoundNumber }} / {{ ui.totalRounds }}</p>
+                <p>{{ ui.throwRound }}: {{ activeThrowNumber }} / {{ ui.totalThrows }}</p>
+            </div>
+
+            <!-- The game table. Player can select which combination to choose to get points. -->
+            <table class="m1" v-if="gameStarted==true && highScoresVisible==false" v-bind:style="disableClick">
+                <tr><th></th><th v-for="playerName in playerNames">{{ playerName }}</th></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'ones')">{{ ui.ones }}</button></td><td v-for="ones in onesValue">{{ ones }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'twos')">{{ ui.twos }}</button></td><td v-for="twos in twosValue">{{ twos }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'threes')">{{ ui.threes }}</button></td><td v-for="threes in threesValue">{{ threes }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'fours')">{{ ui.fours }}</button></td><td v-for="fours in foursValue">{{ fours }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'fives')">{{ ui.fives }}</button></td><td v-for="fives in fivesValue">{{ fives }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'sixes')">{{ ui.sixes }}</button></td><td v-for="sixes in sixesValue">{{ sixes }}</td></tr>
+                <tr><td><div class="bold m1">{{ ui.bonus }}</div></td><td class="bold" v-for="bonus in bonusValue">{{ bonus }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'onePair')">{{ ui.onePair }}</button></td><td v-for="onePair in onePairValue">{{ onePair }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'twoPairs')">{{ ui.twoPairs }}</button></td><td v-for="twoPairs in twoPairsValue">{{ twoPairs }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'threeOfAKind')">{{ ui.threeOfAKind }}</button></td><td v-for="threeOfAKind in threeOfAKindValue">{{ threeOfAKind }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'fourOfAKind')">{{ ui.fourOfAKind }}</button></td><td v-for="fourOfAKind in fourOfAKindValue">{{ fourOfAKind }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'smallStraight')">{{ ui.smallStraight }}</button></td><td v-for="smallStraight in smallStraightValue">{{ smallStraight }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'largeStraight')">{{ ui.largeStraight }}</button></td><td v-for="largeStraight in largeStraightValue">{{ largeStraight }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'fullHouse')">{{ ui.fullHouse }}</button></td><td v-for="fullHouse in fullHouseValue">{{ fullHouse }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'chance')">{{ ui.chance }}</button></td><td v-for="chance in chanceValue">{{ chance }}</td></tr>
+                <tr><td><button class="btn--link" v-on:click="clickEndRound(activeGameId,'yatzy')">{{ ui.yatzy }}</button></td><td v-for="yatzy in yatzyValue">{{ yatzy }}</td></tr>
+                <tr><td><div class="bold m1">{{ ui.total }}</div></td><td class="bold" v-for="total in totalValue">{{ total}}</td></tr>
+            </table>
+
+            <!-- High scores table. Visible if player clicks the High Score button. -->
+            <div v-if="highScoresVisible==true" class="m1">
+                <h3>{{ ui.highScores }}</h3>
+                <ul v-for="highScore in highScoresTable">
+                    <li class="muted">{{ highScore.score }} - {{ highScore.date }} - {{ highScore.name }}</li>
+                </ul>
+            </div>
+        </div>
+        <div class="grd-row-col-1-6--md" id="jatsi_right"></div>
+    </div>
+    <div class="grd-row">
+        <div class="grd-row-col-6 bg--light-gray m1"></div>
+    </div>
+</div>
+</body>
+</html>

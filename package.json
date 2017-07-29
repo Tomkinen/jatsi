@@ -1,0 +1,18 @@
+{
+  "name": "Jatsi",
+  "version": "1.0.0",
+  "description": "Yatzy/Yahtzee with node.js json api backend and vue.js javascript framework frontend.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [
+    "jatsi, yatzy, yahtzee, node, vue"
+  ],
+  "author": "Tomi Kinnunen",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "1.17.2",
+    "express": "4.15.3"
+  }
+}
