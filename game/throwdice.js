@@ -7,9 +7,11 @@ module.exports = {
     let third = reqbody.THREE;
     let fourth = reqbody.FOUR;
     let fifth = reqbody.FIVE;
-    let index = games.map((o) => {
-      return o.gameId;
-    }).indexOf(gameId);
+    let index = games
+      .map(o => {
+        return o.gameId;
+      })
+      .indexOf(gameId);
     games[index].throw++;
 
     // Throw all if first round. Otherwise select which to throw.
@@ -30,14 +32,16 @@ module.exports = {
       if (games[index].throw == 1 || fifth == false) {
         games[index].dice[4] = rollDice.throwDice();
       }
-    }
-    else {
+    } else {
       games[index].throw = 3;
     }
 
     // What AI would do in this situation? Let's find out.
-    if (reqbody.AI=='Y') {
-      games[index].ai={'dice':ai.diceSelector(gameId,games,calculator),'combination':ai.combinationSelector(gameId,games,calculator)};
+    if (reqbody.AI == "Y") {
+      games[index].ai = {
+        dice: ai.diceSelector(gameId, games, calculator),
+        combination: ai.combinationSelector(gameId, games, calculator)
+      };
     }
     return games;
   }

@@ -1,6 +1,6 @@
 "use strict";
 module.exports = {
-  calculate: (dice) => {
+  calculate: dice => {
     let found = 0;
     let foundResult2 = 0;
     let foundResult3 = 0;
@@ -12,8 +12,8 @@ module.exports = {
       for (let i = 0; i < dice.length; i++) {
         if (dice[i] == j) {
           found++;
-          foundResult2 = Math.floor(parseInt(dice[i])*2);
-          foundResult3 = Math.floor(parseInt(dice[i])*3);
+          foundResult2 = Math.floor(parseInt(dice[i]) * 2);
+          foundResult3 = Math.floor(parseInt(dice[i]) * 3);
         }
       }
       if (found > 1) {
@@ -22,8 +22,8 @@ module.exports = {
           two = true;
         }
         if (found == 3 && three == false) {
-            foundResultTotal += foundResult3;
-            three = true;
+          foundResultTotal += foundResult3;
+          three = true;
         }
         if (two == true && three == true) {
           return foundResultTotal;

@@ -1,8 +1,8 @@
 "use strict";
 module.exports = {
-  calculate: (dice) => {
+  calculate: dice => {
     let points = 0;
-    dice.forEach((result) => {
+    dice.forEach(result => {
       points += result;
     });
     return points;

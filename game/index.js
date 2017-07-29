@@ -1,11 +1,11 @@
 "use strict";
 
 // All game functionalities are in this module.
-let newGame=require('./newgame.js');
-let newRound=require('./newround.js');
-let throwDice=require('./throwdice.js');
-let endRound=require('./endround.js');
-let endGame=require('./endgame.js');
+let newGame = require("./newgame.js");
+let newRound = require("./newround.js");
+let throwDice = require("./throwdice.js");
+let endRound = require("./endround.js");
+let endGame = require("./endgame.js");
 module.exports = {
   newGame: (games, playerName) => {
     return newGame.execute(games, playerName);

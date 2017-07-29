@@ -1,17 +1,14 @@
 "use strict";
 
 // Sort array.
-const compare = (a,b) => {
-  if (a.score > b.score)
-    return -1;
-  if (a.score < b.score)
-    return 1;
+const compare = (a, b) => {
+  if (a.score > b.score) return -1;
+  if (a.score < b.score) return 1;
   return 0;
-}
+};
 module.exports = {
-
   // Sort high score by score descending.
-  sortHighScores: (highScores) => {
+  sortHighScores: highScores => {
     return highScores.sort(compare);
   },
 
@@ -19,5 +16,5 @@ module.exports = {
   setHighScore: (highScores, highScore) => {
     highScores.push(highScore);
     return highScores;
-  },
+  }
 };
