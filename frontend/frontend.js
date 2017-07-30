@@ -7,7 +7,7 @@ window.onload = function() {
   axios.get("api/uitext").then(response => {
     // Use Vue.js. The Progressive JavaScript Framework. https://vuejs.org, https://github.com/vuejs/vue
     new Vue({
-      el: "#vui",
+      el: "#vue",
       data: {
         ui: response.data.ui,
         dice1: "-",
@@ -69,18 +69,43 @@ window.onload = function() {
         // When player clicks 'New Game' -button. Send post with player name to api/newgame and initialize values.
         clickNewGame: function(playerCount, numberOfPlayers) {
           if (playerCount <= numberOfPlayers) {
-            this.playerNames = [
-              this.player1NameInput,
-              this.player2NameInput,
-              this.player3NameInput,
-              this.player4NameInput
-            ];
-            this.aiPlayer = [
-              this.player1TypeInput,
-              this.player2TypeInput,
-              this.player3TypeInput,
-              this.player4TypeInput
-            ];
+            this.playerNames = [this.player1NameInput, "", "", ""];
+            if (numberOfPlayers > 2) {
+              this.playerNames[3] = this.player4NameInput;
+            }
+            if (numberOfPlayers > 1) {
+              this.playerNames[2] = this.player3NameInput;
+            }
+            if (numberOfPlayers > 0) {
+              this.playerNames[1] = this.player2NameInput;
+            }
+            this.aiPlayer = [this.player1TypeInput, "", "", ""];
+            if (numberOfPlayers > 2) {
+              this.aiPlayer[3] = this.player4TypeInput;
+            }
+            if (numberOfPlayers > 1) {
+              this.aiPlayer[2] = this.player3TypeInput;
+            }
+            if (numberOfPlayers > 0) {
+              this.aiPlayer[1] = this.player2TypeInput;
+            }
+            this.onesValue = ["", "", "", ""];
+            this.twosValue = ["", "", "", ""];
+            this.threesValue = ["", "", "", ""];
+            this.foursValue = ["", "", "", ""];
+            this.fivesValue = ["", "", "", ""];
+            this.sixesValue = ["", "", "", ""];
+            this.bonusValue = ["", "", "", ""];
+            this.onePairValue = ["", "", "", ""];
+            this.twoPairsValue = ["", "", "", ""];
+            this.threeOfAKindValue = ["", "", "", ""];
+            this.fourOfAKindValue = ["", "", "", ""];
+            this.smallStraightValue = ["", "", "", ""];
+            this.largeStraightValue = ["", "", "", ""];
+            this.fullHouseValue = ["", "", "", ""];
+            this.chanceValue = ["", "", "", ""];
+            this.yatzyValue = ["", "", "", ""];
+            this.totalValue = ["", "", "", ""];
             axios
               .post("api/newgame", {
                 PLAYERNAME: this.playerNames[playerCount]
@@ -88,22 +113,6 @@ window.onload = function() {
               .then(response => {
                 this.gameId[playerCount] = response.data.gameId;
                 this.endGameSituation = false;
-                this.onesValue[playerCount] = "";
-                this.twosValue[playerCount] = "";
-                this.threesValue[playerCount] = "";
-                this.foursValue[playerCount] = "";
-                this.fivesValue[playerCount] = "";
-                this.sixesValue[playerCount] = "";
-                this.bonusValue[playerCount] = "";
-                this.onePairValue[playerCount] = "";
-                this.twoPairsValue[playerCount] = "";
-                this.threeOfAKindValue[playerCount] = "";
-                this.fourOfAKindValue[playerCount] = "";
-                this.smallStraightValue[playerCount] = "";
-                this.largeStraightValue[playerCount] = "";
-                this.fullHouseValue[playerCount] = "";
-                this.chanceValue[playerCount] = "";
-                this.yatzyValue[playerCount] = "";
                 this.totalValue[playerCount] = "";
                 if (playerCount == numberOfPlayers) {
                   this.newRound(this.gameId[0], this.activePlayer);
