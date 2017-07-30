@@ -69,35 +69,37 @@ Get all frontend UI texts.
 
 ## Application Structure
 
-app.js - the main file that starts Jatsi.
+#### app.js
+
+The main application file that starts Jatsi.
 
 #### ai/
 
-- folder that contains all logic to run Jatsi in "AI-mode". Separate files for selecting which dice to keep (diceselector.js) and which combination to select in the end of round (combinationselector.js).
+Folder that contains all logic to run Jatsi in "AI-mode". Separate files for selecting which dice to keep (diceselector.js) and which combination to select in the end of round (combinationselector.js).
 
 #### api/
 
--folder that contains all json APIs that are used.
+Folder that contains all json APIs that are used.
 
 #### calculators/
 
--folder that contains code for calculating points in all possible scenarios.
+Folder that contains code for calculating points in all possible scenarios.
 
 #### frontend/
 
--folder that contains all frontend files. Just three files, index.html, styles.css and frontend.js. All custom javascript is in frontend.js. Frontend gets Vue.js and Axios from cdnjs.cloudflare.com. Vue.js is javascript frontend framework. Axios is promise based http client for the browser. Furtive is small css micro-framework that handles most css styling in Jatsi UI.
+Folder that contains all frontend files. Just three files, index.html, styles.css and frontend.js. All custom javascript is in frontend.js. Frontend gets Vue.js and Axios from cdnjs.cloudflare.com. Vue.js is javascript frontend framework. Axios is promise based http client for the browser. Furtive is small css micro-framework that handles most css styling in Jatsi UI.
 
 #### game/
 
--folder that contains all game operations, like for example starting a new round or throwing dice.
+Folder that contains all game operations, like for example starting a new round or throwing dice.
 
 #### highscore/
 
--folder contains highscore storing and displaying logic.
+Folder contains highscore storing and displaying logic.
 
 #### rolldice/
 
--folder contains code to get random number between 1-6.
+Folder contains code to get random number between 1-6.
 
 ## License
 
