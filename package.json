@@ -10,7 +10,7 @@
     "jatsi, yatzy, yahtzee, node, vue"
   ],
   "author": "Tomi Kinnunen",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "body-parser": "1.17.2",
     "express": "4.15.3"

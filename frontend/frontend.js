@@ -198,7 +198,7 @@ window.onload = function() {
                     this.aiMessage =
                       this.ui.ai_message_4 +
                       ' "' +
-                      response.data.ai.combination +
+                      this.ui[response.data.ai.combination] +
                       '"';
                     setTimeout(() => {
                       this.clickEndRound(
