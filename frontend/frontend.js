@@ -220,6 +220,10 @@ window.onload = function() {
             this.gameTable[this.activePlayer][selectedResult + "Done"] == false
           ) {
             this.dice1 = "-";
+            this.dice2 = "-";
+            this.dice3 = "-";
+            this.dice4 = "-";
+            this.dice5 = "-";
             axios
               .post("api/endround", {
                 GAMEID: gameId,
